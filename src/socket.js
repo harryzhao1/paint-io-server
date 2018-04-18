@@ -3,7 +3,7 @@ const db = require('./db');
 
 const onSocketConnect = io => socket => {
   let logout;
-  
+
   socket.on('DRAW_POINTS', function({points, color}) {
     socket.broadcast.emit('DRAW_POINTS', {points, color});
   });
@@ -19,12 +19,8 @@ const onSocketConnect = io => socket => {
     }
   });
 
-  socket.on("disconnect", (user_name, ack) => {
-      logout();
-
-      if (typeof ack === 'function') {
-        ack("User Logged Out")
-      }
+  socket.on("disconnect", () => {
+      if (typeof logout === 'function') logout();
       socket.broadcast.emit('UPDATE_USER_LIST', {users: db.all()});
 
   });
