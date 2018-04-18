@@ -1,7 +1,7 @@
 const db = require('./db');
 
 const onSocketConnect = io => socket => {
-  socket.on('DRAW_POINTS', function (points, color) {
+  socket.on('DRAW_POINTS', function({points, color}) {
     socket.broadcast.emit('DRAW_POINTS', {points, color});
   });
   // TODO 2.1 Listen for login events (eg "LOGIN") from client and save the user using db.create(username, socket.id)
