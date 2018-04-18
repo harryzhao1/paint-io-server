@@ -1,8 +1,32 @@
 const db = require('./db');
 
+
 const onSocketConnect = io => socket => {
+  let logout;
+  
   socket.on('DRAW_POINTS', function({points, color}) {
     socket.broadcast.emit('DRAW_POINTS', {points, color});
+  });
+
+  socket.on("LOGIN", (user_name, ack) => {
+    if (db.get(user_name)) {
+      if (typeof ack === 'function') {
+        ack("User Name Exists")
+      }
+    } else {
+      logout = db.create(user_name, socket.id);
+      io.emit('UPDATE_USER_LIST', {users: db.all()});
+    }
+  });
+
+  socket.on("disconnect", (user_name, ack) => {
+      logout();
+
+      if (typeof ack === 'function') {
+        ack("User Logged Out")
+      }
+      socket.broadcast.emit('UPDATE_USER_LIST', {users: db.all()});
+
   });
   // TODO 2.1 Listen for login events (eg "LOGIN") from client and save the user using db.create(username, socket.id)
   // TODO 2.2 Prevent users from using an existing username using the "acknowledgement" from the client
