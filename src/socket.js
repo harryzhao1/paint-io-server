@@ -1,7 +1,9 @@
 const db = require('./db');
 
 const onSocketConnect = io => socket => {
-
+  socket.on('DRAW_POINTS', function (points, color) {
+    socket.broadcast.emit('DRAW_POINTS', {points, color});
+  });
   // TODO 2.1 Listen for login events (eg "LOGIN") from client and save the user using db.create(username, socket.id)
   // TODO 2.2 Prevent users from using an existing username using the "acknowledgement" from the client
   // TODO 2.3 Emit an update user list event (eg "UPDATE_USER_LIST") to all clients when there is a login event
@@ -16,6 +18,9 @@ const onSocketConnect = io => socket => {
 };
 
 const connect = server => {
+  const io = require('socket.io')(server);
+  io.on('connect', onSocketConnect(io));
+   
   // TODO 1.1 import socket.io
   // TODO 1.2 attach a socket to the express server by passing the express server instance as an argument when socket.io is invoked
 
